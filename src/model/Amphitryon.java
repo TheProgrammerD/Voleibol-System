@@ -1,5 +1,12 @@
 package model;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Amphitryon {
 	/*
 	 * Attributes
@@ -26,15 +33,54 @@ public class Amphitryon {
 		first = null;
 	}
 
-	public void loadParticipants() {
+	public void loadParticipants(String archive) {
+		File file = new File(archive);
+		if (file.exists()) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				int iterator = 0;
+				String lines;
+				while ((lines = br.readLine()) != null) {
+
+					lines = br.readLine();
+					String[] read = lines.split(",");
+					addParticipantsLinkedList(read[0], read[1], read[2], read[3], read[4], read[5], read[6], read[7]);
+
+					iterator++;
+				}
+				br.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 
-	public void loadSpectator() {
-
+	public void loadSpectator(String archive) {
+		File file = new File(archive);
+		if (file.exists()) {
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				String lines;
+				while ((lines = br.readLine()) != null) {
+					lines = br.readLine();
+					String[] read = lines.split(",");
+					addSpectatorBinaryTreeABB(read[0], read[1], read[2], read[3], read[4], read[5], read[6], read[7]);
+				}
+				br.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
-	
+
+	public Spectator getRoot() {
+		return root;
+	}
 
 	public Participant getFirst() {
 		return first;
@@ -56,8 +102,7 @@ public class Amphitryon {
 			String country, String photo, String birthDay) {
 
 		Spectator s = new Spectator(id, fisrtName, lastName, email, gender, country, photo, birthDay);
-		this.addSpectatorRecursive(s, this.root);
-
+		addSpectatorRecursive(s, this.root);
 	}
 
 	/**
@@ -65,90 +110,72 @@ public class Amphitryon {
 	 * @param spectator
 	 * @param root
 	 */
-	public void addSpectatorRecursive(Spectator spectator, Spectator root) {
+	public void addSpectatorRecursive(Spectator spectator, Spectator rootA) {
+
 		if (root == null) {
 			root = spectator;
 		} else {
-			if (spectator.getId().compareTo(root.getId()) < 0) {
-				if (root.getLeft() == null) {
-					root.setLeft(spectator);
+			if (spectator.getId().compareTo(rootA.getId()) < 0) {
+				if (rootA.getLeft() == null) {
+					rootA.setLeft(spectator);
 				} else {
-					addSpectatorRecursive(spectator, root.getLeft());
+					addSpectatorRecursive(spectator, rootA.getLeft());
 				}
 			} else {
-				if (root.getRigth() == null) {
-					root.setRigth(spectator);
+				if (rootA.getRigth() == null) {
+					rootA.setRigth(spectator);
 				} else {
-					addSpectatorRecursive(spectator, root.getRigth());
+					addSpectatorRecursive(spectator, rootA.getRigth());
 				}
 
 			}
 		}
 	}
 
-	public void addParticipantLinkedList(String id, String fisrtName, String lastName, String email, String gender,
-			String country, String photo, String birthDay) {
-
-		Participant p = new Participant(id, fisrtName, lastName, email, gender, country, photo, birthDay);
-		addParticipantSortRecursive(this.first, p);
-
+	public int countNodesABB(Spectator rootA) {
+		int count = 0;
+		if (rootA == null) {
+			count = 0;
+		} else {
+			count = 1 + countNodesABB(rootA.getLeft()) + countNodesABB(rootA.getRigth());
+		}
+		return count;
 	}
 
-	/**
-	 * Description: This method allows to insert a participant in the double linked list keeping it sort. 
-	 * @param node  The node to realize comparisons.
-	 * @param participant The new node to insert.
-	 */
-	public void addParticipantSortRecursive(Participant node, Participant participant) {
-		//check if the first node is null, if it is true,the node will be insert here
+	public void addParticipantsLinkedList(String id, String fisrtName, String lastName, String email, String gender,
+			String country, String photo, String birthDay) {
+		Participant p = new Participant(id, fisrtName, lastName, email, gender, country, photo, birthDay);
+		addParticipantRecursive(this.first, p);
+	}
+
+	public void addParticipantRecursive(Participant firstA, Participant participant) {
 		if (first == null) {
 			first = participant;
 			participant.setNext(null);
-		}else if(node!=null) { //The first node is not null.
-			if (node.getprevious()==null) {
-				if (node.getId().compareTo(participant.getId())>0) {//The new participant is "minor" that the first
-					participant.setNext(node);
-					first = participant;
-					node.setprevious(participant);
-				} else {//The new participant is "major" that the first
-					if (node.getNext() == null) {
-						node.setNext(participant);
-						participant.setprevious(node);
-					} else {//Recursive method
-						addParticipantSortRecursive(node.getNext(), participant);
-					}
-				}
-			} else if(node.getNext()==null) {//The actual node is the last
-				if (node.getId().compareTo(participant.getId())>0) {//The new participant is "minor" that the first
-					Participant previous = node.getprevious();
-					previous.setNext(participant);
-					participant.setprevious(previous);
-					participant.setNext(node);
-				} else if (node.getId().compareTo(participant.getId())<=0) {//The new participant is "mayor" that the last
-					node.setNext(participant);
-					participant.setprevious(node);
-					participant.setNext(null);
-				} else {//Recursive method
-					addParticipantSortRecursive(node.getNext(), participant);
-				}
-			} else if (node.getprevious()!=null && node.getNext() !=null) {
-				if (node.getId().compareTo(participant.getId())>=0) {//The actual node is in the middle of the linked list
-					Participant previous = node.getprevious();
-					previous.setNext(participant);
-					participant.setprevious(previous);
-					participant.setNext(node);
-				} else {//Recursive method
-					addParticipantSortRecursive(node.getNext(), participant);
-				}
-			}	
+		} else {
+			if (firstA.getNext() != null) {
+				addParticipantRecursive(firstA.getNext(), participant);
+			} else {
+				firstA.setNext(participant);
+				participant.setprevious(firstA);
+				participant.setNext(null);
+			}
 		}
 	}
 	
+	public void f(Spectator r) {
+		if(r!=null) {
+			f(r.getLeft());
+			System.out.println(r);
+			f(r.getRigth());
+		}
+	}
+
 	public String paintRecursive(Participant node) {
 		String msj = "";
 		if (node == null) {
 			msj += "";
-		}else {
+		} else {
 			msj += "\n" + node + paintRecursive(node.getNext());
 		}
 		return msj;
