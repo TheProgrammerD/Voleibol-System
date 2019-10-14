@@ -15,7 +15,8 @@ import java.util.Date;
 import java.io.*;
 import java.text.SimpleDateFormat;
 
-import model.Amphitryon;;
+import model.Amphitryon;
+import model.InvalidRouteException;;
 
 public class Menu {
 
@@ -37,6 +38,17 @@ public class Menu {
 			case 1:
 				saveFromRoute();
 				break;
+			case 2:
+				searchByIDABB();
+				break;
+			case 3:
+				searchByIDList();
+				break;
+			case 4:
+				paintABB();
+			case 5:
+				paintList();
+				break;
 			case 0:
 				close = true;
 				break;
@@ -51,6 +63,11 @@ public class Menu {
 	public int menuSystem() {
 		System.out.println("\nElije una opcion :)");
 		System.out.println(String.format("%1$-8s","1.  Cargar informacion desde el archivo "));
+		System.out.println(String.format("%1$-8s","2.  Buscar espectadores por ID "));
+		System.out.println(String.format("%1$-8s","3.  Buscar participantes por ID "));
+		System.out.println(String.format("%1$-8s","4.  Mostrar Arbol ABB "));
+		System.out.println(String.format("%1$-8s","5.  Mostrar lista "));
+		System.out.println(String.format("%1$-8s","0.  Salir "));
 		
 		int value = 0;
 		//Here I catch the exceptions
@@ -71,10 +88,46 @@ public class Menu {
 	}
 	
 	public void saveFromRoute() {
-		System.out.println("Ingrese la ruta relativa del lugar donde se encuentra el archivo CSV");
+		System.out.println("Ingrese la ruta relativa del lugar donde se encuentra el archivo CSV: ");
 		String file = reader.nextLine();
-		list.loadSpectator(file);
-		list.loadParticipants(file);
+		try {
+			list.loadSpectator(file);
+			list.loadParticipants(file); 
+			System.out.println("Se ha cargado la informacion correctamente");
+		} catch (InvalidRouteException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void searchByIDABB() {
+		System.out.println("Ingrese la ID del candidato que desea buscar: ");
+		String id = reader.nextLine();
+		long t1 = System.nanoTime();
+		System.out.println(list.searchInABB(id, list.getRoot()));
+		long t2 = System.nanoTime();
+		System.out.println("El tiempo que se tardo en realizar la busqueda es de: " + (t2-t1));
+	}
+	
+	public void searchByIDList() {
+		System.out.println("Ingrese la ID del candidato que desea buscar: ");
+		String id = reader.nextLine();
+		long t1 = System.nanoTime();
+		System.out.println(list.searchInLinkedList(id, list.getFirst()));
+		long t2 = System.nanoTime();
+		System.out.println("El tiempo que se tardo en realizar la busqueda es de: " + (t2-t1));
+	}
+	
+	public void paintABB() {
+		list.printBinaryTree(list.getRoot(), 0);
+	}
+	
+	public void paintList() {
+		System.out.println(list.paintRecursive(list.getFirst()));
+	}
+	
+	public static void main(String[] args) {
+
+		Menu m = new Menu();
 	}
 }
 
