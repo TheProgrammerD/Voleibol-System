@@ -1,0 +1,7 @@
+Holi.
+
+Mira que al meter los 100000 datos me genero un stack overflow debido a que la recursividad me salio mas ineficiente de lo que pense.
+
+Esta controlado con una excepcion pero la verdad no me gusto lo que sucedio asi que hay un CSV con menos datos para que se hagan las comprobaciones.
+
+Gracias.

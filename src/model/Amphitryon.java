@@ -142,18 +142,23 @@ public class Amphitryon {
 	}
     //------------------------------------------------------------------------------------------------------------------------//
 	public void addParticipantRecursive(Participant firstA, Participant participant) {
-		if (first == null) {
-			first = participant;
-			participant.setNext(null);
-		} else {
-			if (firstA.getNext() != null) {
-				addParticipantRecursive(firstA.getNext(), participant);
-			} else {
-				firstA.setNext(participant);
-				participant.setprevious(firstA);
+		try {
+			if (first == null) {
+				first = participant;
 				participant.setNext(null);
+			} else {
+				if (firstA.getNext() != null) {
+					addParticipantRecursive(firstA.getNext(), participant);
+				} else {
+					firstA.setNext(participant);
+					participant.setprevious(firstA);
+					participant.setNext(null);
+				}
 			}
+		} catch (StackOverflowError e) {
+			e.getMessage();
 		}
+		
 	}
 	//------------------------------------------------------------------------------------------------------------------------//
 	public void printBinaryTree(Spectator root, int level) {
