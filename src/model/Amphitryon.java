@@ -140,49 +140,51 @@ public class Amphitryon {
 		Participant p = new Participant(id, fisrtName, lastName, email, gender, country, photo, birthDay);
 		addParticipantRecursive(this.first, p);
 	}
-    //------------------------------------------------------------------------------------------------------------------------//
+
 	public void addParticipantRecursive(Participant firstA, Participant participant) {
-		try {
-			if (first == null) {
-				first = participant;
-				participant.setNext(null);
+		if (first == null) {
+			first = participant;
+			participant.setNext(null);
+		} else {
+			if (firstA.getNext() != null) {
+				addParticipantRecursive(firstA.getNext(), participant);
 			} else {
-				if (firstA.getNext() != null) {
-					addParticipantRecursive(firstA.getNext(), participant);
-				} else {
-					firstA.setNext(participant);
-					participant.setprevious(firstA);
-					participant.setNext(null);
-				}
+				firstA.setNext(participant);
+				participant.setprevious(firstA);
+				participant.setNext(null);
 			}
-		} catch (StackOverflowError e) {
-			e.getMessage();
 		}
-		
 	}
 	//------------------------------------------------------------------------------------------------------------------------//
 	public void printBinaryTree(Spectator root, int level) {
-		if (root == null)
-			return;
-		printBinaryTree(root.getRigth(), level + 1);
-		if (level != 0) {
-			for (int i = 0; i < level - 1; i++) {
-				System.out.print("|\t");
+		try {
+			if (root == null)
+				return;
+			printBinaryTree(root.getRigth(), level + 1);
+			if (level != 0) {
+				for (int i = 0; i < level - 1; i++) {
+					System.out.print("|\t");
+				}
+					System.out.println("|-------" + root.getId());
+			} else {
+				System.out.println(root.getId());
 			}
-				System.out.println("|-------" + root.getId());
-		} else {
-			System.out.println(root.getId());
+			printBinaryTree(root.getLeft(), level + 1);
+		} catch (StackOverflowError e) {
+			System.out.println("Cambia la configuracion del manejo de stackOverflow");
 		}
-		printBinaryTree(root.getLeft(), level + 1);
+		
 		
 	}
 	//------------------------------------------------------------------------------------------------------------------------//
-	public String paintRecursive(Participant node) {
+	public String paintRecursive(String country,Participant node) {
 		String msj = "";
-		if (node == null) {
-			msj += "";
-		} else {
-			msj += "\n" + node + paintRecursive(node.getNext());
+		Participant actual = first;
+		while (actual != null) {
+			if (country.equals(actual.getCountry())) {
+				msj += "\n"+actual;
+			}
+			actual = actual.getNext(); 
 		}
 		return msj;
 	}
@@ -205,16 +207,24 @@ public class Amphitryon {
 	}
 	//------------------------------------------------------------------------------------------------------------------------//
 	public String searchInLinkedList(String id,Participant firstA) {
+		String msj = "";
 		if (firstA==null) {
-			return "No hay registros en el sistema";
-		}
-		if(id.compareTo(firstA.getId())!=0 && firstA.getNext() != null){
-			return searchInLinkedList(id, firstA.getNext());
-		} else if (id.compareTo(firstA.getId())==0) {
-			return firstA.toString();
+			msj += "No hay registros en el sistema";
 		} else {
-			return "El codigo buscado no se encuentra registrado en la lista";
+			Participant actual = first;
+			while (actual != null) {
+				if (id.equals(actual.getId())) {
+					msj += actual;
+				}
+				
+				actual = actual.getNext();
+			}
 		}
+		
+		if (msj.equals("")) {
+			msj+= "El codigo buscado no se encuentra registrado en el arbol ABB";
+		}
+		return msj;
 
 	}
 	//------------------------------------------------------------------------------------------------------------------------//

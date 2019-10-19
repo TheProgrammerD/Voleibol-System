@@ -46,6 +46,7 @@ public class Menu {
 				break;
 			case 4:
 				paintABB();
+				break;
 			case 5:
 				paintList();
 				break;
@@ -122,7 +123,9 @@ public class Menu {
 	}
 	
 	public void paintList() {
-		System.out.println(list.paintRecursive(list.getFirst()));
+		System.out.println("Ingrese el pais del que desea buscar los participantes");
+		String country = reader.nextLine();
+		System.out.println(list.paintRecursive(country, list.getFirst()));
 	}
 	
 	public static void main(String[] args) {
